@@ -1,0 +1,107 @@
+import java.util.Scanner;
+
+class Board {
+    private int[][] board;
+
+    public Board() {
+        this.board = new int[3][3];
+    }
+
+    public void printBoard() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (board[i][j] == 0) {
+                    System.out.print(". ");
+                } else if (board[i][j] == 1) {
+                    System.out.print("X ");
+                } else {
+                    System.out.print("O ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    public boolean isValidMove(int row, int col) {
+        return row >= 0 && row < 3 && col >= 0 && col < 3 && board[row][col] == 0;
+    }
+
+    public void makeMove(int row, int col, int player) {
+        board[row][col] = player;
+    }
+
+    public boolean checkWin(int player) {
+        for (int i = 0; i < 3; i++) {
+            if ((board[i][0] == player && board[i][1] == player && board[i][2] == player) ||
+                (board[0][i] == player && board[1][i] == player && board[2][i] == player)) {
+                return true;
+            }
+        }
+        return (board[0][0] == player && board[1][1] == player && board[2][2] == player) ||
+               (board[0][2] == player && board[1][1] == player && board[2][0] == player);
+    }
+}
+
+class Player { 
+    private int playerNumber;
+    private String name;
+
+    public Player(int playerNumber, String name) {
+        this.playerNumber = playerNumber;
+        this.name = name;
+    }
+
+    public int getPlayerNumber() {
+        return playerNumber;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+
+public class TicTacToe {
+    public static void main(String[] args) {
+        Board board = new Board();
+        Scanner scanner = new Scanner(System.in);
+
+        Player player1 = new Player(1, "Player 1");
+        Player player2 = new Player(2, "Player 2");
+        Player currentPlayer = player1;
+
+        int moves = 0;
+
+        while (moves < 9) { // since its a 3x3 board maximum of 9 turns
+            board.printBoard();
+            System.out.println(currentPlayer.getName() + ", enter your move (row and column): ");
+            int row = scanner.nextInt();
+            int col = scanner.nextInt();
+
+            if (!board.isValidMove(row, col)) {
+                System.out.println("Invalid move. Try again.");
+                continue;
+            }
+
+            board.makeMove(row, col, currentPlayer.getPlayerNumber());
+            moves++; //add a move to the counter to make sure it doesn't exceed 9
+
+            if (board.checkWin(currentPlayer.getPlayerNumber())) {
+                board.printBoard();
+                System.out.println(currentPlayer.getName() + " wins!"); //Winner print statement
+                scanner.close();
+                return;
+            }
+
+            // Switch players using if-else
+            if (currentPlayer == player1) {
+                currentPlayer = player2;
+            } else {
+                currentPlayer = player1;
+            }
+        }
+
+        board.printBoard();
+        System.out.println("It's a draw!");
+        scanner.close();
+    }
+}
